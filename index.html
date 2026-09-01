@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selaki Leshilo | EIE Portfolio</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --blue: rgb(0, 157, 255);
+  --magenta: rgb(255, 0, 255);
+  --bg: #0e0e12;
+  --bg-card: #16161d;
+  --bg-hover: #1c1c26;
+  --border: rgba(255, 255, 255, 0.06);
+  --text: #e8e8ec;
+  --text-muted: #7a7a8e;
+  --radius: 14px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: Segoe UI, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.glow-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+.glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.08; }
+.glow-1 { width: 600px; height: 600px; background: var(--blue); top: -15%; left: -10%; animation: glowDrift 25s ease-in-out infinite alternate; }
+.glow-2 { width: 500px; height: 500px; background: var(--magenta); bottom: -10%; right: -10%; animation: glowDrift 30s ease-in-out infinite alternate-reverse; }
+@keyframes glowDrift { 0% { transform: translate(0, 0); } 50% { transform: translate(40px, -50px); } 100% { transform: translate(-30px, 30px); } }
+
+.navbar { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 1.1rem 2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(14, 14, 18, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: padding 0.3s ease; }
+.navbar.scrolled { padding: 0.7rem 2rem; }
+.nav-logo { font-size: 1.3rem; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.nav-logo span { color: var(--blue); }
+.nav-links { display: flex; gap: 1.8rem; }
+.nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); transition: color 0.3s; display: flex; align-items: center; gap: 6px; }
+.nav-links a i { font-size: 0.75rem; opacity: 0.6; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover i { opacity: 1; }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; z-index: 1001; padding: 8px; }
+.hamburger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; display: block; }
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -5px); }
+.nav-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 998; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.nav-overlay.active { opacity: 1; pointer-events: all; }
+
+/* ======= SLEEK MUSIC PLAYER ======= */
+.music-player {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 999;
+  background: rgba(22, 22, 29, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  width: 320px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.music-player.collapsed {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.music-player.collapsed .mp-body,
+.music-player.collapsed .mp-header-text,
+.music-player.collapsed .mp-collapse-btn { display: none; }
+
+.music-player.collapsed .mp-header {
+  padding: 0;
+  height: 60px;
+  justify-content: center;
+  border: none;
+}
+
+.music-player.collapsed .mp-header-icon {
+  margin: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--blue), var(--magenta));
+}
+
+.music-player.collapsed .mp-header-icon i {
+  color: white;
+  font-size: 1.2rem;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.mp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mp-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--magenta));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.mp-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mp-header-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-header-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mp-collapse-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+
+.mp-collapse-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+.mp-body { padding: 14px; }
+
+/* Now playing card */
+.mp-now-playing {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  min-height: 60px;
+}
+
+.mp-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--magenta));
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.mp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp-thumb.playing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.mp-thumb.playing::after {
+  content: "\f04b";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  color: white;
+  font-size: 0.75rem;
+  animation: fadePlay 1.5s ease infinite;
+}
+
+@keyframes fadePlay {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.mp-track-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mp-track-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.mp-track-artist {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Controls */
+.mp-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mp-ctrl-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.mp-ctrl-btn:hover {
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.05);
+}
+
+.mp-ctrl-btn.mp-play-main {
+  width: 44px;
+  height: 44px;
+  background: var(--blue);
+  color: var(--bg);
+  border-color: var(--blue);
+  font-size: 0.9rem;
+}
+
+.mp-ctrl-btn.mp-play-main:hover {
+  background: var(--magenta);
+  border-color: var(--magenta);
+  color: white;
+  box-shadow: 0 4px 16px rgba(255, 0, 255, 0.3);
+}
+
+/* Volume */
+.mp-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  margin-bottom: 12px;
+}
+
+.mp-volume i { font-size: 0.7rem; color: var(--text-muted); }
+
+.mp-volume input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  cursor: pointer;
+}
+
+.mp-volume input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.mp-volume input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+/* Search */
+.mp-search {
+  position: relative;
+}
+
+.mp-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mp-search-input-wrap i {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.mp-search input {
+  width: 100%;
+  padding: 8px 10px 8px 28px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mp-search input:focus { border-color: var(--blue); }
+.mp-search input::placeholder { color: #4a4a5a; }
+
+.mp-results {
+  margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.3);
+}
+
+.mp-results.show { display: block; }
+
+.mp-results::-webkit-scrollbar { width: 4px; }
+.mp-results::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.mp-result-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.mp-result-item:last-child { border-bottom: none; }
+.mp-result-item:hover { background: rgba(0, 157, 255, 0.08); }
+
+.mp-result-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-card);
+}
+
+.mp-result-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.mp-result-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mp-result-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.mp-result-artist {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.mp-loading i { margin-right: 6px; }
+
+/* Presets */
+.mp-presets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.mp-preset {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px;
+  color: var(--text);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.mp-preset:hover {
+  background: rgba(0, 157, 255, 0.1);
+  border-color: var(--blue);
+}
+
+.mp-preset i { font-size: 0.65rem; color: var(--blue); }
+.mp-preset:nth-child(even) i { color: var(--magenta); }
+
+.mp-presets-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Hidden YouTube iframe */
+#yt-player-hidden {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ======= SECTIONS ======= */
+section { padding: 7rem 2rem; max-width: 1060px; margin: 0 auto; }
+.section-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--blue); margin-bottom: 0.6rem; display: block; }
+.section-title { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; letter-spacing: -0.5px; }
+.section-sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 3rem; max-width: 440px; }
+
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal-right { opacity: 0; transform: translateX(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal-scale { opacity: 0; transform: scale(0.95); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.active, .reveal-left.active, .reveal-right.active, .reveal-scale.active { opacity: 1; transform: none; }
+
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: 5rem; }
+.hero-status { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 2rem; font-size: 0.8rem; color: var(--text-muted); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.5); animation: dotPulse 2s ease infinite; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 900; line-height: 1.12; margin-bottom: 1.5rem; color: var(--text); letter-spacing: -1px; }
+.hero h1 .accent { color: var(--blue); }
+.typing-wrap { font-size: 1rem; color: var(--text-muted); margin-bottom: 2.5rem; min-height: 1.5em; }
+.typing-cursor { display: inline-block; width: 2px; height: 1em; background: var(--blue); margin-left: 1px; vertical-align: text-bottom; animation: cursorBlink 1s step-end infinite; }
+@keyframes cursorBlink { 50% { opacity: 0; } }
+.hero-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 480px; margin-bottom: 2.5rem; }
+.hero-btns { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+.btn { padding: 0.75rem 1.6rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease; }
+.btn i { font-size: 0.8rem; }
+.btn-primary { background: var(--blue); color: var(--bg); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0, 157, 255, 0.25); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+.about-grid { display: grid; grid-template-columns: 260px 1fr; gap: 4rem; align-items: start; }
+.about-photo-wrap { position: relative; width: 100%; }
+.about-photo { width: 100%; aspect-ratio: 0.82; border-radius: 16px; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 900; color: var(--text-muted); position: relative; overflow: hidden; }
+.about-photo::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, var(--bg-card), transparent); }
+.about-photo-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(to right, var(--blue), var(--magenta)); border-radius: 0 0 16px 16px; }
+.about-text p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1rem; }
+.about-text p strong { color: var(--text); }
+.about-stats { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+.stat-number { font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-number .stat-accent { color: var(--blue); }
+.stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+.skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; }
+.skill-cell { background: var(--bg); padding: 2rem 1.5rem; transition: background 0.3s ease; position: relative; }
+.skill-cell:hover { background: var(--bg-card); }
+.skill-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; margin-bottom: 1rem; }
+.skill-cell:nth-child(odd) .skill-icon { background: rgba(0, 157, 255, 0.1); color: var(--blue); }
+.skill-cell:nth-child(even) .skill-icon { background: rgba(255, 0, 255, 0.08); color: var(--magenta); }
+.skill-cell h3 { font-size: 0.95rem; color: var(--text); margin-bottom: 0.3rem; font-weight: 700; }
+.skill-cell p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; }
+.skill-bar { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1.2s ease; }
+.skill-cell:nth-child(odd) .skill-bar-fill { background: var(--blue); }
+.skill-cell:nth-child(even) .skill-bar-fill { background: var(--magenta); }
+.skill-num { position: absolute; top: 1.5rem; right: 1.5rem; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
+
+.projects-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; }
+.project-row { display: grid; grid-template-columns: 72px 1fr auto; gap: 1.5rem; align-items: center; padding: 2rem; background: var(--bg); transition: background 0.3s ease; cursor: pointer; }
+.project-row:hover { background: var(--bg-card); }
+.project-icon { width: 64px; height: 64px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+.project-row:nth-child(1) .project-icon { background: rgba(0,157,255,0.08); color: var(--blue); }
+.project-row:nth-child(2) .project-icon { background: rgba(255,0,255,0.06); color: var(--magenta); }
+.project-row:nth-child(3) .project-icon { background: rgba(0,157,255,0.06); color: var(--blue); }
+.project-details h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+.project-details p { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.6rem; line-height: 1.4; }
+.project-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.project-tags span { padding: 0.15rem 0.55rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; font-size: 0.68rem; font-weight: 600; color: var(--text-muted); }
+.project-arrow { font-size: 1rem; color: var(--text-muted); transition: transform 0.3s, color 0.3s; }
+.project-row:hover .project-arrow { transform: translateX(4px); color: var(--blue); }
+
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; }
+.contact-left h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem; color: var(--text); }
+.contact-left > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.contact-item { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; }
+.contact-icon { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; color: var(--text-muted); transition: background 0.3s, color 0.3s; }
+.contact-item:hover .contact-icon { background: rgba(0,157,255,0.1); color: var(--blue); }
+.contact-meta strong { font-size: 0.82rem; display: block; color: var(--text); }
+.contact-meta-sub { font-size: 0.78rem; color: var(--text-muted); }
+.contact-form { display: flex; flex-direction: column; gap: 0.7rem; position: relative; }
+.contact-form input, .contact-form textarea { width: 100%; padding: 0.85rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 0.88rem; font-family: inherit; outline: none; transition: border-color 0.3s; -webkit-appearance: none; }
+.contact-form textarea { min-height: 120px; resize: vertical; }
+.contact-form input:focus, .contact-form textarea:focus { border-color: rgba(0,157,255,0.4); }
+.contact-form input::placeholder, .contact-form textarea::placeholder { color: #4a4a5a; }
+.form-status { font-size: 0.82rem; padding: 0.6rem 1rem; border-radius: 8px; display: none; align-items: center; gap: 8px; margin-top: 0.3rem; }
+.form-status.success { display: flex; background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.3); color: #34d399; }
+.form-status.error { display: flex; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; }
+
+.footer { border-top: 1px solid var(--border); padding: 2.5rem 2rem; }
+.footer-inner { max-width: 1060px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-left { font-size: 0.8rem; color: var(--text-muted); }
+.footer-left .name { color: var(--text-muted); font-size: 0.8rem; }
+.footer-right { display: flex; gap: 0.6rem; }
+.footer-right a { width: 36px; height: 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--text-muted); transition: background 0.3s, color 0.3s, transform 0.3s; }
+.footer-right a:hover { background: var(--blue); color: var(--bg); transform: translateY(-2px); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 0.9rem; cursor: pointer; z-index: 999; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s, background 0.3s; display: flex; align-items: center; justify-content: center; }
+.scroll-top.visible { opacity: 1; transform: translateY(0); }
+.scroll-top:hover { background: var(--blue); color: var(--bg); }
+
+@media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .nav-links { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); flex-direction: column; justify-content: center; align-items: center; gap: 0; z-index: 999; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .nav-links.open { transform: translateY(0); }
+  .nav-links a { font-size: 1.6rem; font-weight: 800; color: var(--text); padding: 1rem 0; display: flex; text-align: center; justify-content: center; letter-spacing: -0.5px; opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .nav-links a i { font-size: 1rem; }
+  .nav-links.open a { opacity: 1; transform: translateY(0); }
+  .nav-links.open a:nth-child(1) { transition-delay: 0.08s; }
+  .nav-links.open a:nth-child(2) { transition-delay: 0.13s; }
+  .nav-links.open a:nth-child(3) { transition-delay: 0.18s; }
+  .nav-links.open a:nth-child(4) { transition-delay: 0.23s; }
+  .nav-links.open a:nth-child(5) { transition-delay: 0.28s; }
+  .mobile-nav-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+  section { padding: 4.5rem 1.4rem; }
+  .section-title { font-size: 1.6rem; }
+  .section-sub { font-size: 0.88rem; margin-bottom: 2rem; }
+
+  .hero { min-height: 100svh; padding-top: 6rem; padding-bottom: 3rem; }
+  .hero h1 { font-size: 2rem; letter-spacing: -0.5px; margin-bottom: 1rem; }
+  .typing-wrap { font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .hero-desc { font-size: 0.95rem; margin-bottom: 2rem; }
+  .hero-btns { flex-direction: column; gap: 0.6rem; }
+  .hero-btns .btn { width: 100%; justify-content: center; padding: 0.9rem; font-size: 0.9rem; }
+
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .about-photo-wrap { display: flex; justify-content: center; }
+  .about-photo { width: 140px; aspect-ratio: 1; border-radius: 50%; font-size: 2.5rem; }
+  .about-photo::after { display: none; }
+  .about-photo-bar { display: none; }
+  .about-photo-ring { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 148px; height: 148px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--blue); border-right-color: var(--magenta); animation: spinRing 4s linear infinite; }
+  @keyframes spinRing { to { transform: translateX(-50%) rotate(360deg); } }
+  .about-text { text-align: center; }
+  .about-text p { font-size: 0.88rem; }
+  .about-stats { justify-content: center; gap: 0; margin-top: 2rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .about-stats .stat { flex: 1; padding: 1.2rem 0.5rem; text-align: center; position: relative; }
+  .about-stats .stat:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 20%; width: 1px; height: 60%; background: var(--border); }
+  .stat-number { font-size: 1.5rem; }
+  .stat-label { font-size: 0.6rem; }
+
+  .skills-grid { grid-template-columns: 1fr 1fr; }
+  .skill-cell { padding: 1.4rem 1.2rem; }
+  .skill-cell h3 { font-size: 0.85rem; }
+  .skill-cell p { font-size: 0.75rem; margin-bottom: 0.8rem; }
+  .skill-num { top: 1rem; right: 1rem; font-size: 0.65rem; }
+  .skill-icon { width: 32px; height: 32px; font-size: 0.8rem; margin-bottom: 0.8rem; }
+
+  .project-row { grid-template-columns: 1fr; gap: 0; padding: 1.4rem; position: relative; }
+  .project-icon { width: 48px; height: 48px; font-size: 1.2rem; border-radius: 12px; margin-bottom: 1rem; }
+  .project-details h3 { font-size: 0.95rem; padding-right: 30px; }
+  .project-details p { font-size: 0.8rem; }
+  .project-arrow { position: absolute; top: 1.4rem; right: 1.4rem; font-size: 1rem; }
+
+  .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .contact-left h3 { font-size: 1.1rem; }
+  .contact-left > p { font-size: 0.85rem; }
+  .contact-items-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .contact-item-compact { flex: 1; min-width: 140px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; transition: border-color 0.3s; }
+  .contact-item-compact:active { border-color: var(--blue); }
+  .contact-item-compact .c-icon { font-size: 1rem; color: var(--text-muted); }
+  .contact-item-compact strong { font-size: 0.72rem; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
+  .contact-item-compact .c-val { font-size: 0.78rem; color: var(--text-muted); }
+  .contact-form input, .contact-form textarea { font-size: 16px; padding: 1rem; border-radius: 12px; }
+  .contact-form .btn { padding: 1rem; font-size: 0.9rem; }
+
+  .footer { padding: 2rem 1.4rem; }
+  .footer-inner { flex-direction: column; text-align: center; gap: 1.2rem; }
+  .footer-left { font-size: 0.75rem; }
+  .footer-right a { width: 40px; height: 40px; border-radius: 10px; font-size: 0.9rem; }
+  .scroll-top { bottom: 1rem; right: 1rem; width: 44px; height: 44px; border-radius: 12px; }
+
+  .music-player { bottom: 1rem; left: 1rem; width: calc(100vw - 2rem); max-width: 320px; }
+  .music-player.collapsed { width: 52px; height: 52px; }
+  .music-player.collapsed .mp-header { height: 52px; }
+  .music-player.collapsed .mp-header-icon { width: 52px; height: 52px; }
+  .mp-search input { font-size: 16px; }
+}
+
+@media (max-width: 380px) {
+  section { padding: 3.5rem 1rem; }
+  .hero h1 { font-size: 1.7rem; }
+  .nav-links a { font-size: 1.3rem; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .about-stats .stat { padding: 1rem 0.3rem; }
+  .stat-number { font-size: 1.3rem; }
+  .contact-items-row { flex-direction: column; }
+  .contact-item-compact { min-width: 100%; }
+  .footer-right a { width: 44px; height: 44px; }
+}
+</style>
+</head>
+<body>
+
+<div class="glow-wrap">
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+</div>
+
+<!-- ======= SLEEK MUSIC PLAYER ======= -->
+<div class="music-player collapsed" id="musicPlayer">
+  <div class="mp-header" id="mpHeader">
+    <div class="mp-header-icon">
+      <i class="fa-solid fa-music"></i>
+    </div>
+    <div class="mp-header-text">
+      <div class="mp-header-title">Music Player</div>
+      <div class="mp-header-sub">Powered by YouTube</div>
+    </div>
+    <button class="mp-collapse-btn" id="mpCollapseBtn" title="Minimize">
+      <i class="fa-solid fa-minus"></i>
+    </button>
+  </div>
+
+  <div class="mp-body">
+    <div class="mp-now-playing">
+      <div class="mp-thumb" id="mpThumb">
+        <i class="fa-solid fa-music"></i>
+      </div>
+      <div class="mp-track-info">
+        <div class="mp-track-title" id="mpTrackTitle">Loading vibes...</div>
+        <div class="mp-track-artist" id="mpTrackArtist">Tap anywhere to start</div>
+      </div>
+    </div>
+
+    <div class="mp-controls">
+      <button class="mp-ctrl-btn" id="mpPrevBtn" title="Previous"><i class="fa-solid fa-backward-step"></i></button>
+      <button class="mp-ctrl-btn mp-play-main" id="mpPlayBtn" title="Play/Pause"><i class="fa-solid fa-play" id="mpPlayIcon"></i></button>
+      <button class="mp-ctrl-btn" id="mpNextBtn" title="Next"><i class="fa-solid fa-forward-step"></i></button>
+    </div>
+
+    <div class="mp-volume">
+      <i class="fa-solid fa-volume-low"></i>
+      <input type="range" id="mpVolume" min="0" max="100" value="30">
+      <i class="fa-solid fa-volume-high"></i>
+    </div>
+
+    <div class="mp-search">
+      <div class="mp-search-input-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="mpSearchInput" placeholder="Search for a song..." autocomplete="off">
+      </div>
+      <div class="mp-results" id="mpResults"></div>
+    </div>
+
+    <span class="mp-presets-label">Quick vibes:</span>
+    <div class="mp-presets">
+      <button class="mp-preset" onclick="loadTrack('jfKfPfyJRdk', 'Lofi Girl', 'Chill Beats Radio')"><i class="fa-solid fa-mug-hot"></i> Lofi</button>
+      <button class="mp-preset" onclick="loadTrack('4xDzrJKXOOY', 'Synthwave Radio', 'Retro Wave')"><i class="fa-solid fa-user-astronaut"></i> Synthwave</button>
+      <button class="mp-preset" onclick="loadTrack('Dx5qFachd3A', 'Jazz Cafe', 'Cozy Coffee')"><i class="fa-solid fa-guitar"></i> Jazz</button>
+      <button class="mp-preset" onclick="loadTrack('rUxyKA_-grg', 'Gaming Beats', 'Focus Music')"><i class="fa-solid fa-gamepad"></i> Gaming</button>
+    </div>
+  </div>
+
+  <div id="yt-player-hidden">
+    <div id="ytPlayer"></div>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo">selaki<span>.</span></a>
+  <div class="nav-links" id="navLinks">
+    <span class="mobile-nav-label">Navigation</span>
+    <a href="#home"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#about"><i class="fa-solid fa-user"></i> About</a>
+    <a href="#skills"><i class="fa-solid fa-code"></i> Skills</a>
+    <a href="#projects"><i class="fa-solid fa-diagram-project"></i> Projects</a>
+    <a href="#contact"><i class="fa-solid fa-envelope"></i> Contact</a>
+  </div>
+  <button class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<section class="hero" id="home">
+  <div class="hero-status">
+    <div class="status-dot"></div>
+    2nd Year EIE Student
+  </div>
+  <h1>I'm Selaki Leshilo.<br>I build things that<br>run on <span class="accent">electrons</span>.</h1>
+  <div class="typing-wrap"><span id="typingText"></span><span class="typing-cursor"></span></div>
+  <p class="hero-desc">Electrical and Information Engineering student who turns ideas into working hardware and real solutions.</p>
+  <div class="hero-btns">
+    <a href="#projects" class="btn btn-primary"><i class="fa-solid fa-arrow-down"></i> View projects</a>
+    <a href="#contact" class="btn btn-ghost"><i class="fa-regular fa-paper-plane"></i> Contact me</a>
+  </div>
+</section>
+
+<section id="about">
+  <span class="section-label reveal">About</span>
+  <h2 class="section-title reveal">Who I am</h2>
+  <p class="section-sub reveal">Engineering student with a soldering iron addiction.</p>
+  <div class="about-grid">
+    <div class="about-photo-wrap reveal-left">
+      <div class="about-photo">SL<div class="about-photo-bar"></div></div>
+      <div class="about-photo-ring"></div>
+    </div>
+    <div class="about-text reveal-right">
+      <p>I study <strong>Electrical and Information Engineering</strong> because I genuinely want to understand how everything around us works &#8212; from the power grid to the phone in your pocket.</p>
+      <p>I'm the kind of person who takes things apart to see how they work, and <strong>usually</strong> puts them back together. My happy place is somewhere between a breadboard and a terminal window.</p>
+      <p>Outside engineering: football, music discovery, and anything space-related.</p>
+      <div class="about-stats">
+        <div class="stat reveal-scale"><div class="stat-number" data-target="10">0<span class="stat-accent">+</span></div><div class="stat-label">Projects</div></div>
+        <div class="stat reveal-scale"><div class="stat-number" data-target="5">0<span class="stat-accent">+</span></div><div class="stat-label">Tools</div></div>
+        <div class="stat reveal-scale"><div class="stat-number" data-target="2">0<span class="stat-accent">+</span></div><div class="stat-label">Years</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <span class="section-label reveal">Skills</span>
+  <h2 class="section-title reveal">What I work with</h2>
+  <p class="section-sub reveal">Tools and concepts I use regularly.</p>
+  <div class="skills-grid reveal">
+    <div class="skill-cell"><span class="skill-num">01</span><div class="skill-icon"><i class="fa-solid fa-microchip"></i></div><h3>Circuit Design</h3><p>Analog/digital circuits, PCB layout, LTspice, Proteus.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="75%"></div></div></div>
+    <div class="skill-cell"><span class="skill-num">02</span><div class="skill-icon"><i class="fa-solid fa-gears"></i></div><h3>Embedded Systems</h3><p>Arduino, ESP32, RPi, sensors and real-time control.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="70%"></div></div></div>
+    <div class="skill-cell"><span class="skill-num">03</span><div class="skill-icon"><i class="fa-solid fa-terminal"></i></div><h3>Programming</h3><p>C/C++, Python, MATLAB for signals and data.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="65%"></div></div></div>
+    <div class="skill-cell"><span class="skill-num">04</span><div class="skill-icon"><i class="fa-solid fa-wave-square"></i></div><h3>Signals &amp; Systems</h3><p>Fourier, filtering, modulation, comm theory.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="60%"></div></div></div>
+    <div class="skill-cell"><span class="skill-num">05</span><div class="skill-icon"><i class="fa-solid fa-bolt"></i></div><h3>Power Systems</h3><p>AC/DC, transformers, motors, renewables.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="55%"></div></div></div>
+    <div class="skill-cell"><span class="skill-num">06</span><div class="skill-icon"><i class="fa-solid fa-wifi"></i></div><h3>IoT &amp; Networking</h3><p>MQTT, WiFi/BLE, sensor nets, dashboards.</p><div class="skill-bar"><div class="skill-bar-fill" data-width="50%"></div></div></div>
+  </div>
+</section>
+
+<section id="projects">
+  <span class="section-label reveal">Work</span>
+  <h2 class="section-title reveal">Selected projects</h2>
+  <p class="section-sub reveal">Things I've built and learned from.</p>
+  <div class="projects-list">
+    <div class="project-row reveal">
+      <div class="project-icon"><i class="fa-solid fa-lightbulb"></i></div>
+      <div class="project-details"><h3>Li-Fi Audio Transmitter</h3><p>Stereo audio transmitted over an LED beam using AM and a photodiode receiver.</p><div class="project-tags"><span>Analog</span><span>Op-Amps</span><span>LED</span></div></div>
+      <div class="project-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+    </div>
+    <div class="project-row reveal">
+      <div class="project-icon"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+      <div class="project-details"><h3>IoT Weather Station</h3><p>ESP32 logging temp, humidity, pressure to a live MQTT dashboard.</p><div class="project-tags"><span>ESP32</span><span>MQTT</span><span>Python</span></div></div>
+      <div class="project-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+    </div>
+    <div class="project-row reveal">
+      <div class="project-icon"><i class="fa-solid fa-robot"></i></div>
+      <div class="project-details"><h3>Line-Following Robot</h3><p>Autonomous robot with IR sensors and PID control for path tracking.</p><div class="project-tags"><span>Arduino</span><span>PID</span><span>Motors</span></div></div>
+      <div class="project-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <span class="section-label reveal">Contact</span>
+  <h2 class="section-title reveal">Let's talk</h2>
+  <p class="section-sub reveal">Got an idea or just want to connect?</p>
+  <div class="contact-grid">
+    <div class="contact-left reveal-left">
+      <h3>Reach out</h3>
+      <p>I'm always interested in hearing about new projects or opportunities.</p>
+      <div class="contact-item"><div class="contact-icon"><i class="fa-solid fa-envelope"></i></div><div class="contact-meta"><strong>Email</strong><div class="contact-meta-sub">selaki198@gmail.com</div></div></div>
+      <div class="contact-item"><div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div><div class="contact-meta"><strong>Location</strong><div class="contact-meta-sub">South Africa</div></div></div>
+      <div class="contact-item"><div class="contact-icon"><i class="fa-solid fa-graduation-cap"></i></div><div class="contact-meta"><strong>Studies</strong><div class="contact-meta-sub">2nd Year EIE</div></div></div>
+    </div>
+    <form class="contact-form reveal-right" id="contactForm">
+      <input type="text" name="_honey" style="display:none">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_subject" value="New Portfolio Contact from Website!">
+      <input type="text" name="name" id="formName" placeholder="Your Name" required>
+      <input type="email" name="email" id="formEmail" placeholder="Your Email" required>
+      <textarea name="message" id="formMessage" placeholder="Your Message" required></textarea>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%; justify-content:center;">
+        <i class="fa-solid fa-paper-plane" id="btnIcon"></i> <span id="btnText">Send message</span>
+      </button>
+      <div class="form-status" id="formStatus"></div>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-left"><i class="fa-regular fa-copyright"></i> <span id="year"></span> <span class="name">Selaki Leshilo</span>. All Rights Reserved.</div>
+    <div class="footer-right">
+      <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a href="#" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    </div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop"><i class="fa-solid fa-chevron-up"></i></button>
+
+<script>
+// ===================================================
+// 🔑 PASTE YOUR YOUTUBE DATA API KEY BELOW
+// ===================================================
+var YT_API_KEY = "PASTE_YOUR_API_KEY_HERE";
+// ===================================================
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* ===== CONTACT FORM ===== */
+var contactForm = document.getElementById("contactForm");
+var submitBtn = document.getElementById("submitBtn");
+var btnIcon = document.getElementById("btnIcon");
+var btnText = document.getElementById("btnText");
+var formStatus = document.getElementById("formStatus");
+
+contactForm.addEventListener("submit", function(e) {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  btnIcon.className = "fa-solid fa-spinner fa-spin";
+  btnText.textContent = "Sending...";
+  formStatus.className = "form-status";
+  formStatus.style.display = "none";
+  var formData = new FormData(contactForm);
+  fetch("https://formsubmit.co/ajax/selaki198@gmail.com", {
+    method: "POST",
+    headers: { "Accept": "application/json" },
+    body: formData
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(){
+    submitBtn.disabled = false;
+    btnIcon.className = "fa-solid fa-check";
+    btnText.textContent = "Sent!";
+    formStatus.className = "form-status success";
+    formStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Message sent successfully!';
+    contactForm.reset();
+    setTimeout(function(){
+      btnIcon.className = "fa-solid fa-paper-plane";
+      btnText.textContent = "Send message";
+      formStatus.style.display = "none";
+    }, 4000);
+  })
+  .catch(function(){
+    submitBtn.disabled = false;
+    btnIcon.className = "fa-solid fa-triangle-exclamation";
+    btnText.textContent = "Try again";
+    formStatus.className = "form-status error";
+    formStatus.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Something went wrong.';
+  });
+});
+
+/* ===== SLEEK MUSIC PLAYER ===== */
+var ytPlayer;
+var isPlayerReady = false;
+var isPlaying = false;
+var currentVideoId = "jfKfPfyJRdk"; // Default: Lofi Girl
+var history = [];
+var historyIndex = -1;
+
+var musicPlayer = document.getElementById("musicPlayer");
+var mpHeader = document.getElementById("mpHeader");
+var mpCollapseBtn = document.getElementById("mpCollapseBtn");
+var mpPlayBtn = document.getElementById("mpPlayBtn");
+var mpPlayIcon = document.getElementById("mpPlayIcon");
+var mpPrevBtn = document.getElementById("mpPrevBtn");
+var mpNextBtn = document.getElementById("mpNextBtn");
+var mpVolume = document.getElementById("mpVolume");
+var mpSearchInput = document.getElementById("mpSearchInput");
+var mpResults = document.getElementById("mpResults");
+var mpTrackTitle = document.getElementById("mpTrackTitle");
+var mpTrackArtist = document.getElementById("mpTrackArtist");
+var mpThumb = document.getElementById("mpThumb");
+
+// Load YouTube API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player("ytPlayer", {
+    height: "200",
+    width: "200",
+    videoId: currentVideoId,
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      loop: 1,
+      playlist: currentVideoId,
+      playsinline: 1,
+      rel: 0
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError
+    }
+  });
+};
+
+function onPlayerReady() {
+  isPlayerReady = true;
+  ytPlayer.setVolume(parseInt(mpVolume.value, 10));
+  mpTrackTitle.textContent = "Lofi Girl";
+  mpTrackArtist.textContent = "Ready — tap to play";
+  history.push({ id: currentVideoId, title: "Lofi Girl", artist: "Chill Beats" });
+  historyIndex = 0;
+}
+
+function onPlayerStateChange(e) {
+  if (e.data === YT.PlayerState.PLAYING) {
+    isPlaying = true;
+    mpPlayIcon.className = "fa-solid fa-pause";
+    mpThumb.classList.add("playing");
+    try {
+      var d = ytPlayer.getVideoData();
+      if (d && d.title) {
+        mpTrackTitle.textContent = d.title;
+        mpTrackArtist.textContent = d.author || "YouTube";
+      }
+    } catch (err) {}
+  } else if (e.data === YT.PlayerState.PAUSED) {
+    isPlaying = false;
+    mpPlayIcon.className = "fa-solid fa-play";
+    mpThumb.classList.remove("playing");
+  } else if (e.data === YT.PlayerState.ENDED) {
+    ytPlayer.playVideo();
+  } else if (e.data === YT.PlayerState.BUFFERING) {
+    mpTrackArtist.textContent = "Buffering...";
+  }
+}
+
+function onPlayerError() {
+  mpTrackTitle.textContent = "Track unavailable";
+  mpTrackArtist.textContent = "Try another one";
+}
+
+// Auto-play on first user interaction
+var hasAutoStarted = false;
+function autoStart() {
+  if (!hasAutoStarted && isPlayerReady && ytPlayer) {
+    ytPlayer.playVideo();
+    hasAutoStarted = true;
+  }
+  document.removeEventListener("click", autoStart);
+  document.removeEventListener("touchstart", autoStart);
+  document.removeEventListener("scroll", autoStart);
+  document.removeEventListener("keydown", autoStart);
+}
+document.addEventListener("click", autoStart);
+document.addEventListener("touchstart", autoStart);
+document.addEventListener("scroll", autoStart);
+document.addEventListener("keydown", autoStart);
+
+// Load a specific track
+function loadTrack(videoId, title, artist) {
+  if (!isPlayerReady) return;
+  currentVideoId = videoId;
+  ytPlayer.loadVideoById({ videoId: videoId });
+  ytPlayer.setVolume(parseInt(mpVolume.value, 10));
+  mpTrackTitle.textContent = title || "Loading...";
+  mpTrackArtist.textContent = artist || "";
+  
+  // Add to history
+  if (historyIndex < history.length - 1) {
+    history = history.slice(0, historyIndex + 1);
+  }
+  history.push({ id: videoId, title: title, artist: artist });
+  historyIndex = history.length - 1;
+  
+  mpResults.classList.remove("show");
+  mpSearchInput.value = "";
+}
+
+// Play/Pause
+mpPlayBtn.addEventListener("click", function() {
+  if (!isPlayerReady) return;
+  if (isPlaying) {
+    ytPlayer.pauseVideo();
+  } else {
+    ytPlayer.playVideo();
+  }
+});
+
+// Previous / Next
+mpPrevBtn.addEventListener("click", function() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    var t = history[historyIndex];
+    ytPlayer.loadVideoById({ videoId: t.id });
+    mpTrackTitle.textContent = t.title;
+    mpTrackArtist.textContent = t.artist;
+  }
+});
+
+mpNextBtn.addEventListener("click", function() {
+  if (historyIndex < history.length - 1) {
+    historyIndex++;
+    var t = history[historyIndex];
+    ytPlayer.loadVideoById({ videoId: t.id });
+    mpTrackTitle.textContent = t.title;
+    mpTrackArtist.textContent = t.artist;
+  } else {
+    // No next — play a random recommended track
+    var recommended = ["jfKfPfyJRdk", "4xDzrJKXOOY", "Dx5qFachd3A", "rUxyKA_-grg"];
+    var next = recommended[Math.floor(Math.random() * recommended.length)];
+    loadTrack(next, "Random Vibe", "Discovering...");
+  }
+});
+
+// Volume
+mpVolume.addEventListener("input", function() {
+  if (isPlayerReady) ytPlayer.setVolume(parseInt(mpVolume.value, 10));
+});
+
+// Collapse / Expand
+mpCollapseBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  musicPlayer.classList.add("collapsed");
+});
+
+musicPlayer.addEventListener("click", function(e) {
+  if (musicPlayer.classList.contains("collapsed")) {
+    musicPlayer.classList.remove("collapsed");
+  }
+});
+
+// Search YouTube
+var searchTimeout;
+mpSearchInput.addEventListener("input", function() {
+  clearTimeout(searchTimeout);
+  var query = mpSearchInput.value.trim();
+  
+  if (!query) {
+    mpResults.classList.remove("show");
+    return;
+  }
+  
+  searchTimeout = setTimeout(function() {
+    searchYouTube(query);
+  }, 400);
+});
+
+function searchYouTube(query) {
+  if (!YT_API_KEY || YT_API_KEY === "PASTE_YOUR_API_KEY_HERE") {
+    mpResults.classList.add("show");
+    mpResults.innerHTML = '<div class="mp-loading">⚠️ API key not set. See instructions in code.</div>';
+    return;
+  }
+  
+  mpResults.classList.add("show");
+  mpResults.innerHTML = '<div class="mp-loading"><i class="fa-solid fa-spinner fa-spin"></i>Searching...</div>';
+  
+  var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&videoCategoryId=10&q=" + encodeURIComponent(query) + "&key=" + YT_API_KEY;
+  
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        mpResults.innerHTML = '<div class="mp-loading">Error: ' + (data.error.message || "Check API key") + '</div>';
+        return;
+      }
+      if (!data.items || data.items.length === 0) {
+        mpResults.innerHTML = '<div class="mp-loading">No results found</div>';
+        return;
+      }
+      
+      mpResults.innerHTML = "";
+      data.items.forEach(function(item) {
+        var vId = item.id.videoId;
+        var title = item.snippet.title.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+        var artist = item.snippet.channelTitle;
+        var thumb = item.snippet.thumbnails.default.url;
+        
+        var div = document.createElement("div");
+        div.className = "mp-result-item";
+        div.innerHTML = '<div class="mp-result-thumb"><img src="' + thumb + '" alt=""></div><div class="mp-result-info"><div class="mp-result-title">' + title + '</div><div class="mp-result-artist">' + artist + '</div></div>';
+        div.addEventListener("click", function() {
+          loadTrack(vId, title, artist);
+        });
+        mpResults.appendChild(div);
+      });
+    })
+    .catch(function() {
+      mpResults.innerHTML = '<div class="mp-loading">Search failed. Check connection.</div>';
+    });
+}
+
+// Close results when clicking outside
+document.addEventListener("click", function(e) {
+  if (!mpSearchInput.contains(e.target) && !mpResults.contains(e.target)) {
+    mpResults.classList.remove("show");
+  }
+});
+
+/* ===== TYPING ===== */
+var phrases = ["Circuit designer.", "Embedded developer.", "Signal enthusiast.", "Problem solver."];
+var pi = 0, ci = 0, isDel = false;
+var te = document.getElementById("typingText");
+function typeLoop() {
+  var w = phrases[pi];
+  if (isDel) { te.textContent = w.substring(0, ci); ci--; }
+  else { te.textContent = w.substring(0, ci); ci++; }
+  var sp = isDel ? 35 : 70;
+  if (!isDel && ci > w.length) { sp = 2000; isDel = true; }
+  if (isDel && ci < 0) { isDel = false; pi = (pi + 1) % phrases.length; ci = 0; sp = 400; }
+  setTimeout(typeLoop, sp);
+}
+typeLoop();
+
+/* ===== MENU ===== */
+var ham = document.getElementById("hamburger");
+var nls = document.getElementById("navLinks");
+var ovr = document.getElementById("navOverlay");
+function togMenu() {
+  ham.classList.toggle("active");
+  nls.classList.toggle("open");
+  ovr.classList.toggle("active");
+  document.body.style.overflow = nls.classList.contains("open") ? "hidden" : "";
+}
+function clsMenu() {
+  ham.classList.remove("active");
+  nls.classList.remove("open");
+  ovr.classList.remove("active");
+  document.body.style.overflow = "";
+}
+ham.addEventListener("click", togMenu);
+ovr.addEventListener("click", clsMenu);
+var nAs = nls.querySelectorAll("a");
+for (var i = 0; i < nAs.length; i++) { nAs[i].addEventListener("click", clsMenu); }
+
+/* ===== SCROLL ===== */
+window.addEventListener("scroll", function() {
+  var n = document.getElementById("navbar");
+  var s = document.getElementById("scrollTop");
+  if (window.scrollY > 50) { n.classList.add("scrolled"); } else { n.classList.remove("scrolled"); }
+  if (window.scrollY > 400) { s.classList.add("visible"); } else { s.classList.remove("visible"); }
+});
+document.getElementById("scrollTop").addEventListener("click", function() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* ===== REVEAL ===== */
+var rEls = document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale");
+var obs = new IntersectionObserver(function(entries) {
+  for (var j = 0; j < entries.length; j++) {
+    if (entries[j].isIntersecting) {
+      entries[j].target.classList.add("active");
+      var bars = entries[j].target.querySelectorAll(".skill-bar-fill");
+      for (var b = 0; b < bars.length; b++) {
+        bars[b].style.width = bars[b].getAttribute("data-width");
+      }
+      var ctr = entries[j].target.querySelector(".stat-number");
+      if (ctr && !ctr.getAttribute("data-counted")) {
+        ctr.setAttribute("data-counted", "true");
+        var tgt = parseInt(ctr.getAttribute("data-target"));
+        var cur = 0;
+        var stp = Math.ceil(tgt / 25);
+        var iv = setInterval(function(el, t) {
+          return function() {
+            cur = cur + stp;
+            if (cur >= t) { cur = t; clearInterval(iv); }
+            el.innerHTML = cur + '<span class="stat-accent">+</span>';
+          };
+        }(ctr, tgt), 50);
+      }
+    }
+  }
+}, { threshold: 0.1 });
+for (var k = 0; k < rEls.length; k++) { obs.observe(rEls[k]); }
+
+/* ===== MOBILE CONTACT SWAP ===== */
+function handleMobileContact() {
+  var w = window.innerWidth;
+  var cl = document.querySelector(".contact-left");
+  var items = cl.querySelectorAll(".contact-item");
+  if (w <= 768 && !document.querySelector(".contact-items-row")) {
+    var row = document.createElement("div");
+    row.className = "contact-items-row";
+    for (var m = 0; m < items.length; m++) {
+      var ic = items[m].querySelector(".contact-icon");
+      var mt = items[m].querySelector(".contact-meta");
+      var st = mt.querySelector("strong");
+      var sb = mt.querySelector(".contact-meta-sub");
+      var card = document.createElement("div");
+      card.className = "contact-item-compact";
+      card.innerHTML = '<div class="c-icon">' + ic.innerHTML + '</div><strong>' + st.textContent + '</strong><div class="c-val">' + sb.textContent + '</div>';
+      row.appendChild(card);
+      items[m].style.display = "none";
+    }
+    cl.appendChild(row);
+  } else if (w > 768) {
+    var er = document.querySelector(".contact-items-row");
+    if (er) { er.remove(); }
+    for (var n = 0; n < items.length; n++) { items[n].style.display = ""; }
+  }
+}
+handleMobileContact();
+window.addEventListener("resize", handleMobileContact);
+
+var ml = document.querySelector(".mobile-nav-label");
+function toggleLabel() {
+  if (ml) { ml.style.display = window.innerWidth <= 768 ? "block" : "none"; }
+}
+toggleLabel();
+window.addEventListener("resize", toggleLabel);
+</script>
+
+</body>
+</html>
